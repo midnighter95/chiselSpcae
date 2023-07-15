@@ -1,7 +1,9 @@
-package playground
+package examples
 
 import chisel3._
-import chisel3.util._
+import chisel3.util.BitPat
+import chisel3.util.BitPat.bitPatToUInt
+import chisel3.util.experimental.decode._
 
 class Zext extends Module {
   val in = IO(Input(UInt(5.W)))

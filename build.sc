@@ -68,4 +68,47 @@ object playground extends common.ArithmeticModule with ScalafmtModule { m =>
     }
   }
 
+  object tests1 extends Tests with Utest with ScalafmtModule {
+    override def scalacPluginIvyDeps = T {
+      m.scalacPluginIvyDeps()
+    }
+
+    override def scalacOptions = T {
+      m.scalacOptions()
+    }
+
+    override def moduleDeps = super.moduleDeps ++ chiseltestModule
+
+    override def ivyDeps = T {
+      super.ivyDeps() ++
+        Agg(utest(), bc()) ++
+        chiseltestIvyDep()
+    }
+  }
+
+}
+
+object examples extends common.ArithmeticModule with ScalafmtModule { m =>
+  def scalaVersion = T { v.scala }
+  def chisel3Module = Some(mychisel3)
+  def chisel3PluginJar = T { Some(mychisel3.plugin.jar()) }
+  def chiseltestModule = Some(mychiseltest)
+  def upickle: T[Dep] = v.upickle
+  def osLib: T[Dep] = v.osLib
+  def spire: T[Dep] = v.spire
+  def evilplot: T[Dep] = v.evilplot
+  def bc: T[Dep] = v.bc
+  def utest: T[Dep] = v.utest
+
+  object tests extends Tests with Utest with ScalafmtModule {
+    override def scalacPluginIvyDeps = T { m.scalacPluginIvyDeps() }
+    override def scalacOptions = T { m.scalacOptions() }
+    override def moduleDeps = super.moduleDeps ++ chiseltestModule
+    override def ivyDeps = T {
+      super.ivyDeps() ++
+        Agg(utest(), bc()) ++
+        chiseltestIvyDep()
+    }
+  }
+
 }

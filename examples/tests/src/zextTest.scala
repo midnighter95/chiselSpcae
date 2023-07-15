@@ -1,22 +1,23 @@
-package playground
+package examples
 
 import chisel3._
 import chiseltest._
 import chiseltest.{ChiselUtestTester, _}
 import utest.{TestSuite, _}
 
-object exampleTest extends TestSuite with ChiselUtestTester{
+object zextTest extends TestSuite with ChiselUtestTester {
   def tests: Tests = Tests {
-    test("example pass") {
+    test("zextTest pass") {
       def testcase() = {
-        testCircuit(new Passthrough,
+        testCircuit(new Zext,
           Seq(chiseltest.internal.NoThreadingAnnotation,
             chiseltest.simulator.WriteVcdAnnotation)) {
-          dut : Passthrough =>
-            dut.in.poke(1.U)
-            dut.out.expect(1.U)
+          dut: Zext =>
+            dut.in.poke("b11000".U)
+            dut.out.expect(24.S)
         }
       }
+
       testcase()
     }
 

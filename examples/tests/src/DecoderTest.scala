@@ -1,17 +1,18 @@
-package playground
+package examples
 
 import chisel3._
+import chiseltest._
 import chiseltest.{ChiselUtestTester, _}
 import utest.{TestSuite, _}
 
-object decoder24Test extends TestSuite with ChiselUtestTester{
+object DecoderTest extends TestSuite with ChiselUtestTester {
   def tests: Tests = Tests {
-    test("24decoder pass") {
+    test("Decoder24 pass") {
       def testcase() = {
         testCircuit(new Decoder24,
           Seq(chiseltest.internal.NoThreadingAnnotation,
             chiseltest.simulator.WriteVcdAnnotation)) {
-          dut : Decoder24 =>
+          dut: Decoder24 =>
             dut.in.poke(0.U)
             dut.out.expect(1.U)
             dut.in.poke(1.U)
@@ -24,6 +25,19 @@ object decoder24Test extends TestSuite with ChiselUtestTester{
       }
       testcase()
     }
-
+    test("rec7LUT pass") {
+      def testcase() = {
+        testCircuit(new Rec7LUT,
+          Seq(chiseltest.internal.NoThreadingAnnotation,
+            chiseltest.simulator.WriteVcdAnnotation)) {
+          dut: Rec7LUT =>
+            dut.in.poke(0.U)
+            dut.out.expect(127.U)
+            dut.in.poke(1.U)
+            dut.out.expect(125.U)
+        }
+      }
+      testcase()
+    }
   }
 }
