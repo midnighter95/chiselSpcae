@@ -7,6 +7,12 @@ import chiseltest.RawTester.test
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
+/**
+  * One layer cases: Seq[Node]
+  *
+  *
+  *
+  */
 object playground extends App{
   println("hello chisel")
 
@@ -21,28 +27,25 @@ object playground extends App{
     Node(0, 1, 1, 1),
   ))
 
-  val layer1: Seq[Seq[Node]] = iterLayer(layer0,1,4,2)
-
-
+  val layer1: Seq[Seq[Node]] = iterLayer(layer0,1,4,3)
   println("cases in layer1="+layer1.length)
 
-
-  val layer2 = iterLayer(layer1,2,4,1)
-
-
+  val layer2 = iterLayer(layer1,2,4,3)
   println("cases in layer2="+layer2.length)
 
-  val layer3 = iterLayer(layer2,3,4,0)
-
-  println("cases in layer3="+layer3.length)
-  println(layer3.head.takeRight(8).map(c => c.number))
-  println(layer3.head.slice(16,24).map(c => c.number))
-  println(layer3.head.slice(8,16).map(c => c.number))
-  println(layer3.head.take(8).map(c => c.number))
-
+  val layer3 = iterLayer(layer2,3,4,3)
+  println("cases in layer3=" + layer3.length)
+  println(layer3.head.takeRight(8).map(c => c.associativeNum))
+  println(layer3.head.slice(16,24).map(c => c.associativeNum))
+  println(layer3.head.slice(8,16).map(c => c.associativeNum))
+  println(layer3.head.take(8).map(c => c.associativeNum))
 
 
-  def getNodesCombination(nodes: Seq[Seq[Node]]): Seq[Seq[Node]] = for {
+  /** Get the combination of those nodes, the all cases
+    *
+    * @return A Seq of Seq[Node], each element represents a possible case in this layer.
+    */
+  def getNextLayerCases(nodes: Seq[Seq[Node]]): Seq[Seq[Node]] = for {
     t1 <- nodes(0)
     t2 <- nodes(1)
     t3 <- nodes(2)
@@ -53,25 +56,35 @@ object playground extends App{
     t8 <- nodes(7)
   } yield Seq(t8, t7, t6, t5, t4, t3, t2, t1)
 
-  private def addFormerLayer(layer: Seq[Seq[Node]], oldLayer: Seq[Node]) = layer.map{ c => c ++ oldLayer}
-
-  private def getNextLayerNodes(level:Int, constrains:Int, gap:Int, nodes: Seq[Node]): Seq[Seq[Node]] = {
+  /** Get all nodes cases in next layer
+    * In each postion, generate all possible nodes according to config.
+    *
+    * @return A Seq of ListBuffer[Node], each element represents all the possible Nodes in this position.
+    */
+  private def getNextLayerNodes(level:Int, maxAssociativeNum:Int, finalLevel:Int, nodes: Seq[Node]): Seq[Seq[Node]] = {
+    /** @todo why take 8 , need take all*/
     val formerLayerNodes = nodes.take(8)
 
     Seq(1,2,3,4,5,6,7,8).map{
-      c => getPossibleNodes(level,c,constrains, gap,formerLayerNodes)
+      c => getPossibleNodesFromOnePostion(level, c, maxAssociativeNum, finalLevel, formerLayerNodes)
     }
   }
 
-  private def getAllLayerCases(level:Int, constrains:Int, gap:Int, nodes: Seq[Node]): Seq[Seq[Node]] = {
-    addFormerLayer(getNodesCombination(getNextLayerNodes(level, constrains, gap, nodes)), nodes)
+  private def getNextLayerCasesWithFormer(level:Int, maxAssociativeNums:Int, finalLevel:Int, nodes: Seq[Node]): Seq[Seq[Node]] = {
+    getNextLayerCases(getNextLayerNodes(level, maxAssociativeNums, finalLevel, nodes)).map{ _ ++ nodes}
   }
 
-  /** sort all nodes to satisfy associative condition*/
-  private def sortedNodes(constrain:Int, nodes:Seq[Node]): Seq[Node] = {
+  /** Get all nodes to satisfy associative condition
+    *
+    * @param nodes: all nodes which can be found
+    * @param maxAssociativeNum constainss
+    *
+    * @return
+    */
+  private def getAvailableNodes(maxAssociativeNum:Int, nodes:Seq[Node]): Seq[Node] = {
     var list = new ListBuffer[Node]
     var startpoint = nodes.head.position
-    for(i <- 1 to constrain;if nodes.exists(_.position == startpoint)){
+    for(i <- 1 to maxAssociativeNum;if nodes.exists(_.position == startpoint)){
       val node = nodes.filter(_.position == startpoint).head
       startpoint = node.getNextPos
       list.append(node)
@@ -79,33 +92,40 @@ object playground extends App{
     list
   }
 
-  /** @todo add more check*/
-  def getPossibleNodes(level:Int, position:Int, constrain:Int,gap:Int, nodes:Seq[Node]): Seq[Node] = {
+  /**
+    *
+    * @param position the position of this node
+    * @param nodes all nodes from the former level
+    *
+    * activated check:
+    * node in final level need position==depth
+    * node before needs sum>= (position - finalLevel * (maxAssociativeNum-1)
+    * @todo add more check*/
+  def getPossibleNodesFromOnePostion(level:Int, position:Int, maxAssociativeNum:Int, finalLevel:Int, nodes:Seq[Node]): Seq[Node] = {
     var list = new ListBuffer[Node]
-    val availableNodes = sortedNodes(constrain, nodes.takeRight(position))
+    val availableNodes = getAvailableNodes(maxAssociativeNum, nodes.takeRight(position))
     val availableNodesNum = availableNodes.length
-    val iterNum = if(availableNodesNum > constrain) constrain else availableNodesNum
+    val associativeNum = availableNodesNum.min(maxAssociativeNum)
 
-    for(i <- 1 to iterNum){
+    /** See if this associative number satisfy verification*/
+    for(i <- 1 to associativeNum){
       val depth = availableNodes.take(i).map(_.depth).sum
-      if (gap==0){
+      if (finalLevel==0){
         if(availableNodes.take(i).map(_.depth).sum == position)
           list.append(Node(level, position, i, depth))
-      }else if (position >= i && availableNodes.take(i).map(_.depth).sum>= (position - gap * (constrain-1))) {
+      }else if (position >= i && availableNodes.take(i).map(_.depth).sum>= (position - (finalLevel-level) * (maxAssociativeNum - 1))) {
       list.append(Node(level, position, i, depth))
       }
     }
-
-
     list
   }
 
 
 
-  def iterLayer(layer: Seq[Seq[Node]], level:Int, constrain:Int, gap:Int):  Seq[Seq[Node]] = {
+  def iterLayer(layer: Seq[Seq[Node]], level:Int, maxAssociativeNum:Int, finalLevel:Int):  Seq[Seq[Node]] = {
     val targetLayer = new ListBuffer[Seq[Node]]
     layer.foreach { i => {
-      val oneLayercase: Seq[Seq[Node]] = getAllLayerCases(level, constrain, gap, i)
+      val oneLayercase: Seq[Seq[Node]] = getNextLayerCasesWithFormer(level, maxAssociativeNum, finalLevel, i)
       oneLayercase.foreach(targetLayer.append(_))
       }
     }
@@ -121,10 +141,7 @@ class PlaygroundModule extends Module{
   out := in
 }
 
-case class Node(level:Int, position:Int, number:Int, depth:Int) {
-
-  def isFinish: Boolean = depth == position
-
+case class Node(level:Int, position:Int, associativeNum:Int, depth:Int) {
   def getNextPos = position - depth
 
 }
