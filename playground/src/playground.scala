@@ -111,8 +111,11 @@ object playground extends App{
     for(i <- 1 to associativeNum){
       val depth = availableNodes.take(i).map(_.depth).sum
       if (finalLevel==0){
-        if(availableNodes.take(i).map(_.depth).sum == position)
+        if(availableNodes.take(i).map(_.depth).sum == position) {
+          val buildNode = Node(level, position, i, depth)
+          buildNode.isSingle = true
           list.append(Node(level, position, i, depth))
+        }
       }else if (position >= i && availableNodes.take(i).map(_.depth).sum>= (position - (finalLevel-level) * (maxAssociativeNum - 1))) {
       list.append(Node(level, position, i, depth))
       }
@@ -143,6 +146,10 @@ class PlaygroundModule extends Module{
 
 case class Node(level:Int, position:Int, associativeNum:Int, depth:Int) {
   def getNextPos = position - depth
+
+  var isSingle = false
+
+  var father = Seq
 
 }
 
