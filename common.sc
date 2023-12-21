@@ -3,7 +3,7 @@ import mill.scalalib._
 import mill.scalalib.publish._
 import coursier.maven.MavenRepository
 
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 
 trait ArithmeticModule extends ScalaModule with PublishModule {
