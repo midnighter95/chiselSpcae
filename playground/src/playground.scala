@@ -2,8 +2,6 @@ package playground
 
 import chisel3._
 import chisel3.util._
-import chiseltest._
-import chiseltest.RawTester.test
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 

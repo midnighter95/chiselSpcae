@@ -1,5 +1,5 @@
 {
-  description = "vector";
+  description = "arithmetic";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -15,46 +15,15 @@
         let
           pkgs = import nixpkgs { inherit system; overlays = [ overlay ]; };
           deps = with pkgs; [
-            rv32-clang
-            glibc_multi
-            llvmForDev.bintools
-
-            cmake
-            libargs
-            glog
-            fmt
-            (enableDebugging libspike)
-            zlib
-            jsoncpp.dev
-
+            git
             mill
-            python3
-            go
-            ammonite
-            metals
-            gnused
-            coreutils
-            gnumake
-            gnugrep
-            which
-            parallel
-            protobuf
-            ninja
-            verilator
-            antlr4
-            numactl
-            dtc
-            espresso
             circt
-            buddy-mlir
-
-            yarn
-            mdl
+            verilator
           ];
         in
         {
           legacyPackages = pkgs;
-          devShell = pkgs.mkShell.override { stdenv = pkgs.llvmForDev.stdenv; } {
+          devShell = pkgs.mkShell {
             buildInputs = deps;
           };
         }
