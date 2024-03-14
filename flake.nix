@@ -1,5 +1,5 @@
 {
-  description = "vector";
+  description = "chiselSpace";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -15,20 +15,17 @@
         let
           pkgs = import nixpkgs { inherit system; overlays = [ overlay ]; };
           deps = with pkgs; [
-
-
             mill
-
             parallel
             protobuf
-
             circt
-
+            verilator
+            which
           ];
         in
         {
           legacyPackages = pkgs;
-          devShell = pkgs.mkShell.override { stdenv = pkgs.llvmForDev.stdenv; } {
+          devShell = pkgs.mkShell {
             buildInputs = deps;
           };
         }
