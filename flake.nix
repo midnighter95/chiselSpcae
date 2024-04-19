@@ -15,12 +15,13 @@
         let
           pkgs = import nixpkgs { inherit system; overlays = [ overlay ]; };
           deps = with pkgs; [
+            git
             mill
-            parallel
-            protobuf
             circt
             verilator
-            which
+            cmake
+            zlib
+            ninja
           ];
         in
         {
