@@ -21,5 +21,11 @@ reformat:
 checkformat:
 	mill -i __.checkFormat 
 
+exampletest:
+	mill -i -j 0 examples.tests
+
+run:
+	mill -i -j 0 playground[6.0.0]
+
 test:
-	mill -i -j 0 playground.tests
+	mill -i -j 0 playgroundtest[6.0.0]

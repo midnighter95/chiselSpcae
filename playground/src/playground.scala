@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 object playground extends App{
-  println("hello chisel")
+  println("This is your playground.")
 }
 
 class Example extends Module{
