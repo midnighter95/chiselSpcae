@@ -5,15 +5,11 @@ import chiseltest._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-
-
-
-
 class DecoderTester extends AnyFlatSpec with ChiselScalatestTester with Matchers {
   behavior.of("DecoderTester")
 
-  it should "test Decoder24 circuits" in {
-    test(new Decoder24) { dut: Decoder24 =>
+  it should "test Decoder24 circuits with VCD" in {
+    test(new Decoder24).withAnnotations(Seq(WriteVcdAnnotation)) { dut: Decoder24 =>
       dut.in.poke(0.U)
       dut.out.expect(1.U)
       dut.in.poke(1.U)
@@ -33,8 +29,4 @@ class DecoderTester extends AnyFlatSpec with ChiselScalatestTester with Matchers
       dut.out.expect(125.U)
     }
   }
-
-
-
-
 }

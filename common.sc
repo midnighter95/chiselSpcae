@@ -30,7 +30,6 @@ trait PlaygroundModule
   extends ScalaModule
     with HasChisel {
 
-
   override def ivyDeps = T(super.ivyDeps() )
 }
 
@@ -39,31 +38,28 @@ trait PlaygroundTestModule
     with HasChisel
     with TestModule.ScalaTest {
 
-  def arithmeitcModule: PlaygroundModule
+  def mainModule: PlaygroundModule
 
   def chiselModule = None
 
-  def chiselPluginJar: T[Option[PathRef]] = T(arithmeitcModule.chiselPluginJar())
+  def chiselPluginJar: T[Option[PathRef]] = T(mainModule.chiselPluginJar())
 
-  def chiselIvy: Option[Dep] = arithmeitcModule.chiselIvy
+  def chiselIvy: Option[Dep] = mainModule.chiselIvy
 
-  def chiselPluginIvy: Option[Dep] = arithmeitcModule.chiselPluginIvy
+  def chiselPluginIvy: Option[Dep] = mainModule.chiselPluginIvy
 
   def scalatestIvy: Dep
 
   def chiseltestIvy: Dep
-
-  def utestIvy: Dep
 
   override def defaultCommandName() = "test"
 
   override def ivyDeps = T(
     super.ivyDeps() ++ Agg(
       scalatestIvy,
-      chiseltestIvy,
-      utestIvy
+      chiseltestIvy
     )
   )
 
-  override def moduleDeps = super.moduleDeps ++ Some(arithmeitcModule)
+  override def moduleDeps = super.moduleDeps ++ Some(mainModule)
 }

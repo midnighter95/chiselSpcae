@@ -5,10 +5,7 @@ import $file.common
 
 object v {
   val scala = "2.13.10"
-  val spire = ivy"org.typelevel::spire:0.18.0"
-  val evilplot = ivy"io.github.cibotech::evilplot:0.9.0"
   val oslib =  ivy"com.lihaoyi::os-lib:0.9.1"
-  val mainargs = ivy"com.lihaoyi::mainargs:0.5.0"
   val chiselCrossVersions = Map(
     "5.0.0" -> (ivy"org.chipsalliance::chisel:5.0.0", ivy"org.chipsalliance:::chisel-plugin:5.0.0"),
     "6.0.0" -> (ivy"org.chipsalliance::chisel:6.0.0", ivy"org.chipsalliance:::chisel-plugin:6.0.0"),
@@ -18,7 +15,6 @@ object v {
     "6.0.0" -> (ivy"edu.berkeley.cs::chiseltest:6.0.0"),
   )
   val scalatest = ivy"org.scalatest::scalatest:3.2.0"
-  val utest = ivy"com.lihaoyi::utest:latest.integration"
 }
 
 
@@ -53,13 +49,11 @@ trait PlaygroundTest
 
   override def millSourcePath = os.pwd / "playground" / "tests"
 
-  def arithmeitcModule = playground(crossValue)
+  def mainModule = playground(crossValue)
 
   def scalatestIvy = v.scalatest
 
   def chiseltestIvy = v.chiseltest(crossValue)
-
-  def utestIvy = v.utest
 }
 
 
@@ -89,14 +83,11 @@ object examples
     with ScalafmtModule {
     override def scalaVersion = T(v.scala)
 
-    def arithmeitcModule = examples
+    def mainModule = examples
 
     def scalatestIvy = v.scalatest
 
     def chiseltestIvy = v.chiseltest("6.0.0")
-
-    def utestIvy = v.utest
-
 
   }
 

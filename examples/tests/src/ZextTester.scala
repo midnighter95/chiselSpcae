@@ -14,5 +14,4 @@ class ZextTester extends AnyFlatSpec with ChiselScalatestTester with Matchers {
       dut.out.expect(24.S)
     }
   }
-
 }
